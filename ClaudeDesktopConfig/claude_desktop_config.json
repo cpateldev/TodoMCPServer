@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "TodoMcpHttpServer": {      
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "J:\\SRC\\AspNet\\TodoMCPServer\\TodoMCPServer.csproj"
+      ]
+    }
+  }
+}
