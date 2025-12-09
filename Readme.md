@@ -85,8 +85,9 @@ flowchart TD
 - **Modern Stack**: .NET 10 with Minimal API architecture
 - **Database**: Entity Framework Core with In-Memory DB provider
 - **API Documentation**: OpenAPI/Swagger UI integration
-- **MCP Server Support**: MCP Server support using both HTTP and stdio transport types
+- **MCP Server Support**: MCP Server support using both HTTP and STDIO transport types
 - **MCP Integration**: Pre-configured with Claude Desktop, Gemini Code Assist, Visual Studio Github Copilot, and VSCode MCP Client for major AI development tools
+- ** MCP Inspector Support**: Easily test MCP tools using MCP Inspector using HTTP or STDIO transport types
 - **Cross-Platform**: Runs on any platform supporting .NET 10
 
 ## Tools and MCP Clients
@@ -474,8 +475,8 @@ TodoMCPServer/
 - [Create a minimal MCP server using C# and publish to NuGet](https://learn.microsoft.com/en-us/dotnet/ai/quickstarts/build-mcp-server#pack-and-publish-to-nuget)
 - [MCP Servers in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers?view=visualstudio)
 - [MCP Servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
-- [Claude Desktop MCP Configuration](https://claude.ai/docs/desktop/mcp-servers)
-- [Gemini Code Assist MCP Configuration](https://developers.google.com/gemini/code-assist/mcp-servers)
+- [Claude Desktop MCP Configuration](https://modelcontextprotocol.io/docs/develop/connect-local-servers)
+- [Gemini Code Assist MCP Configuration](https://developers.google.com/gemini-code-assist/docs/use-agentic-chat-pair-programmer#configure-mcp-servers)
 - [C# SDK Samples: MCP](https://github.com/modelcontextprotocol/csharp-sdk/tree/main/samples)
 - **[DevBlogs: Build a Model Context Protocol (MCP) server in C#](https://devblogs.microsoft.com/dotnet/build-a-model-context-protocol-mcp-server-in-csharp/)**
 - **[Building a Sports-Themed MCP Server using .NET](https://dev.to/willvelida/building-a-sports-themed-mcp-server-using-net-22ln)**
