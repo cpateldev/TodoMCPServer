@@ -34,7 +34,7 @@ Instructions:
 - [Overview](#overview)
 - [Architecture Diagram](#architecture-diagram)
 - [Features](#features)
-- [Badges](#badges)
+- [Tools and MCP Clients](#tools-and-mcp-clients)
 - [Prerequisites](#prerequisites)
 - [How to Run the Application](#how-to-run-the-application)
 - [Package Dependencies](#package-dependencies)
@@ -47,6 +47,7 @@ Instructions:
   - [Gemini Code Assist Configuration](#gemini-code-assist-configuration)
   - [Configuration Comparison](#configuration-comparison)
   - [Testing MCP Tools](#testing-mcp-tools)
+  - [Testing using MCP Inspector](#testing-using-mcp-inspector)
 - [Project Structure](#project-structure)
 - [Troubleshooting MCP Connections](#troubleshooting-mcp-connections)
 - [Security Notes](#security-notes)
@@ -154,9 +155,11 @@ Here are the NuGet packages used in this project:
 | `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.0`          | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
 | `Microsoft.AspNetCore.OpenApi`                         | `10.0.0`          | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
 | `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.0`          | Entity Framework Core in-memory database provider.                                                       |
-| `ModelContextProtocol`                                 | `0.4.1-preview.1` | A protocol for synchronizing models between a client and a server.                                       |
+| `ModelContextProtocol`                                 | `0.4.1-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`                     |
 | `ModelContextProtocol.AspNetCore`                      | `0.4.1-preview.1` | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
 | `Swashbuckle.AspNetCore.SwaggerUI`                     | `10.0.1`          | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
+
+> See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](DotnetMCPPackagesOverview.md)**
 
 ## Web API REST Endpoints
 
