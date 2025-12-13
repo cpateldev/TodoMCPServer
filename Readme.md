@@ -31,27 +31,46 @@ Instructions:
 
 ## Table of contents
 
-- [Overview](#overview)
-- [Architecture Diagram](#architecture-diagram)
-- [Features](#features)
-- [Tools and MCP Clients](#tools-and-mcp-clients)
-- [Prerequisites](#prerequisites)
-- [How to Run the Application](#how-to-run-the-application)
-- [Package Dependencies](#package-dependencies)
-- [Web API REST Endpoints](#web-api-rest-endpoints)
-- [MCP Tools Details](#mcp-tools-details)
-- [MCP JSON Config Files and Usage](#mcp-json-config-files-and-usage)
-  - [Visual Studio Github Copilot Configuration](#visual-studio-github-copilot-configuration)
-  - [VS Code Configuration](#vs-code-configuration)
-  - [Claude Desktop Configuration](#claude-desktop-configuration)
-  - [Gemini Code Assist Configuration](#gemini-code-assist-configuration)
-  - [Configuration Comparison](#configuration-comparison)
-  - [Testing MCP Tools](#testing-mcp-tools)
-  - [Testing using MCP Inspector](#testing-using-mcp-inspector)
-- [Project Structure](#project-structure)
-- [Troubleshooting MCP Connections](#troubleshooting-mcp-connections)
-- [Security Notes](#security-notes)
-- [References](#references)
+- [Todo MCP Server (.NET Minimal API with MCP server support)](#todo-mcp-server-net-minimal-api-with-mcp-server-support)
+  - [Table of contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Architecture Diagram](#architecture-diagram)
+  - [Features](#features)
+  - [Tools and MCP Clients](#tools-and-mcp-clients)
+  - [Prerequisites](#prerequisites)
+  - [Create a New Project named `TodoMCPServer`](#create-a-new-project-named-todomcpserver)
+    - [Add Required NuGet Packages](#add-required-nuget-packages)
+    - [Update `Program.cs` to Configure MCP Server](#update-programcs-to-configure-mcp-server)
+    - [Map REST Endpoints and add MCP Tools](#map-rest-endpoints-and-add-mcp-tools)
+  - [How to Run the Application](#how-to-run-the-application)
+    - [1. Clone and Navigate if you want to just try it out existing project](#1-clone-and-navigate-if-you-want-to-just-try-it-out-existing-project)
+    - [2. Restore Dependencies](#2-restore-dependencies)
+    - [3. Run the Application](#3-run-the-application)
+    - [4. Access Interfaces](#4-access-interfaces)
+    - [5. Alternative Launch Methods](#5-alternative-launch-methods)
+  - [Package Dependencies](#package-dependencies)
+  - [Web API REST Endpoints](#web-api-rest-endpoints)
+    - [Endpoint Details Table](#endpoint-details-table)
+    - [Swagger UI Usage](#swagger-ui-usage)
+  - [MCP Tools Details](#mcp-tools-details)
+    - [MCP Tools Table](#mcp-tools-table)
+    - [Prompt to Request Flow](#prompt-to-request-flow)
+  - [MCP JSON Config Files and Usage](#mcp-json-config-files-and-usage)
+    - [Visual Studio Github Copilot Configuration](#visual-studio-github-copilot-configuration)
+      - [Visual Studio MCP support](#visual-studio-mcp-support)
+    - [VS Code GitHub Copilot Configuration](#vs-code-github-copilot-configuration)
+    - [GitHub Copilot responses to Todo MCP](#github-copilot-responses-to-todo-mcp)
+    - [Claude Desktop Configuration](#claude-desktop-configuration)
+    - [Claude Desktop response to Todo MCP](#claude-desktop-response-to-todo-mcp)
+    - [Gemini Code Assist Configuration](#gemini-code-assist-configuration)
+    - [Gemini Code Assists responses to Todo MCP](#gemini-code-assists-responses-to-todo-mcp)
+    - [Configuration Comparison](#configuration-comparison)
+    - [Testing MCP Tools](#testing-mcp-tools)
+    - [Testing using MCP Inspector](#testing-using-mcp-inspector)
+  - [Project Structure](#project-structure)
+  - [Troubleshooting MCP Connections](#troubleshooting-mcp-connections)
+  - [Security Notes](#security-notes)
+  - [References](#references)
 
 ## Overview
 
@@ -112,9 +131,88 @@ flowchart TD
 - **Git** for version control
 - For MCP testing: **GitHub Copilot in VS Code**, **Claude Desktop**, **Gemini Code Assist**, or any MCP-compatible client
 
+## Create a New Project named `TodoMCPServer`
+
+```bash
+dotnet new webapi -n TodoMCPServer
+cd TodoMCPServer
+```
+### Add Required NuGet Packages
+
+```bash
+dotnet add package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore --version 10.0.0
+dotnet add package Microsoft.AspNetCore.OpenApi --version 10.0.0
+dotnet add package Microsoft.EntityFrameworkCore.InMemory --version 10.0.0
+dotnet add package ModelContextProtocol --version 0.4.1-preview.1
+dotnet add package ModelContextProtocol.AspNetCore --version 0.4.1-preview.1
+dotnet add package Swashbuckle.AspNetCore.SwaggerUI --version 10.0.1
+```
+### Update `Program.cs` to Configure MCP Server
+
+```csharp
+builder.Services
+    .AddMcpServer()
+    .WithStdioServerTransport()   // Use stdio transport for local AI clients
+    .WithHttpTransport()          // Use HTTP transport for web-based clients
+    .WithToolsFromAssembly();     // Automatically register all MCP tools in the assembly
+```
+> [!WARNING]
+> NOTE: .WithStdioServerTransport() is commented out to allow deployment to Azure App Service as stdio transport is not supported there.
+
+### Map REST Endpoints and add MCP Tools
+
+Create a new class `Tools\TodoService.cs` and implement the MCP tools for todo operations. Each tool corresponds to a REST API endpoint.
+
+```csharp
+using ModelContextProtocol.AspNetCore.Tools;
+using TodoMCPServer.Models;
+
+public static class TodoService
+{
+    public static IEndpointRouteBuilder MapEndPoints(this IEndpointRouteBuilder app)
+    {
+        app.MapGet("/todoitems", TodoTools.GetAllTodos);
+        app.MapPost("/todoitems/complete", TodoTools.CompleteTodoItem);
+        app.MapGet("/todoitems/completed", TodoTools.GetCompletedTodos);
+        app.MapGet("/todoitems/{id}", TodoTools.GetTodoById);
+        app.MapPost("/todoitems/ids", TodoTools.GetTodosByIds);
+        app.MapGet("/todoitems/search/{name}", TodoTools.SearchTodosByName);
+        app.MapPost("/todoitems", TodoTools.AddTodoItem);
+        app.MapPatch("/todoitems/{id}", TodoTools.UpdateTodoItem);
+        // POST /todoitems/batch
+        app.MapPost("/todoitems/batch", TodoTools.BatchUpdateTodoItems);
+        app.MapDelete("/todoitems/{id}", TodoTools.DeleteTodoItem);
+        app.MapGet("/todoitems/exists/{id}", TodoTools.TodoExists);
+
+        return app;
+    }
+}
+
+[McpServerToolType]
+public static class TodoTools
+{
+    // Get all todo items
+    [McpServerTool(Name = "get_all_todos"), Description("Retrieve all todo items optionally filtered by status.")]
+    public static async Task<List<Todo>> GetAllTodos(string? status, TodoDb db)
+    {
+        if (string.Equals(status, "completed", StringComparison.OrdinalIgnoreCase))
+        {
+            return await db.Todos.Where(t => t.IsComplete).ToListAsync();
+        }
+        else
+        {
+            return await db.Todos.ToListAsync();
+        }
+    }
+    // Other MCP tool implementations go here...
+}
+
+```
+
+
 ## How to Run the Application
 
-### 1. Clone and Navigate
+### 1. Clone and Navigate if you want to just try it out existing project
 
 ```bash
 git clone https://github.com/cpateldev/TodoMCPServer.git
@@ -155,7 +253,7 @@ Here are the NuGet packages used in this project:
 | `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.0`          | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
 | `Microsoft.AspNetCore.OpenApi`                         | `10.0.0`          | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
 | `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.0`          | Entity Framework Core in-memory database provider.                                                       |
-| `ModelContextProtocol`                                 | `0.4.1-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`                     |
+| `ModelContextProtocol`                                 | `0.4.1-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
 | `ModelContextProtocol.AspNetCore`                      | `0.4.1-preview.1` | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
 | `Swashbuckle.AspNetCore.SwaggerUI`                     | `10.0.1`          | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
 
@@ -258,6 +356,8 @@ sequenceDiagram
 3. Run project using VS 2026 or using `dotnet run` or `dotnet watch` commands
 4. Click `Start` link above json block in `.mcp.json`
 5. Access todo tools via GitHub Copilot AI assistant panel shown in above image
+
+![Visual Studio MCP Json](images/VisualStudioMCPJSOn.png)
 
 ### VS Code GitHub Copilot Configuration
 
@@ -409,7 +509,8 @@ sequenceDiagram
 **Testing using MCP Inspector - HTTP**
 
 > MCP Inspector Command for `HTTP` transport:
->> For http transport use: `http://localhost:5000/api/mcp`, you must start the server first using `dotnet run` command.
+>
+> > For http transport use: `http://localhost:5000/api/mcp`, you must start the server first using `dotnet run` command.
 
 ```bash
 npx -y @modelcontextprotocol/inspector http http://localhost:5000/api/mcp
@@ -420,7 +521,8 @@ npx -y @modelcontextprotocol/inspector http http://localhost:5000/api/mcp
 **Testing using MCP Inspector - STDIO**
 
 > MCP Inspector Command for `STDIO` transport:
->> For stdio transport: click `Connect` button from MCP Inspector UI, no need to start the server first as stdio transport will start the server process.
+>
+> > For stdio transport: click `Connect` button from MCP Inspector UI, no need to start the server first as stdio transport will start the server process.
 
 ```bash
 npx -y @modelcontextprotocol/inspector stdio "dotnet run --project ToDoMCPServer.csproj"
@@ -483,6 +585,8 @@ TodoMCPServer/
 - [C# SDK Samples: MCP](https://github.com/modelcontextprotocol/csharp-sdk/tree/main/samples)
 - **[DevBlogs: Build a Model Context Protocol (MCP) server in C#](https://devblogs.microsoft.com/dotnet/build-a-model-context-protocol-mcp-server-in-csharp/)**
 - **[Building a Sports-Themed MCP Server using .NET](https://dev.to/willvelida/building-a-sports-themed-mcp-server-using-net-22ln)**
-
+- [Azure App Service: Tutorial - AI Model Context Protocol Server (.NET)](https://learn.microsoft.com/en-us/azure/app-service/tutorial-ai-model-context-protocol-server-dotnet)
+- [Connect to a Model Context Protocol Server Endpoint in Foundry Agent Service (Preview) - Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/model-context-protocol?view=foundry-classic&source=recommendations)
+- [How to use MCP Inspector](https://medium.com/@laurentkubaski/how-to-use-mcp-inspector-2748cd33faeb)
 
 [Go to Top](#table-of-contents)

@@ -17,7 +17,6 @@ public static class TodoService
             .Cast<IEndpoint>();
         */
 
-
         app.MapGet("/todoitems", TodoTools.GetAllTodos);
 
         app.MapPost("/todoitems/complete", TodoTools.CompleteTodoItem);

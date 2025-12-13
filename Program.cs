@@ -35,7 +35,11 @@ namespace AspNetOpenAPIDemo
             builder.Services.AddOpenApi();
             builder.Services
                 .AddMcpServer()
-                .WithStdioServerTransport()
+                //.WithTools<TemperatureConverterTool>()    // Old way of adding tools now replaced with WithToolsFromAssembly()    
+                //.WithTools<MultiplicationTool>()
+                //.WithTools<WeatherTools>()
+                //.WithTools<TodoTools>()
+                .WithStdioServerTransport()   // Disable this line to deploy this to Azure App Service.
                 .WithHttpTransport()
                 .WithToolsFromAssembly();
 
@@ -61,14 +65,13 @@ namespace AspNetOpenAPIDemo
             var app = builder.Build();
 
             //app.UseCors(MyAllowSpecificOrigins);
-            
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
                 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Todo API V1"));
             }
-
 
             app.UseHttpsRedirection();
             PopulateTodoDB(app.Services);
