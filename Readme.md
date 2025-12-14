@@ -67,6 +67,14 @@ Instructions:
     - [Configuration Comparison](#configuration-comparison)
     - [Testing MCP Tools](#testing-mcp-tools)
     - [Testing using MCP Inspector](#testing-using-mcp-inspector)
+  - [Deploy to Azure App Service](#deploy-to-azure-app-service)
+    - [Option A: Using Azure CLI](#option-a-using-azure-cli)
+    - [Option B: Using Visual Studio](#option-b-using-visual-studio)
+  - [Test Todo REST API in Azure](#test-todo-rest-api-in-azure)
+  - [Secure Your Endpoint (Optional)](#secure-your-endpoint-optional)
+  - [Monitor \& Scale](#monitor--scale)
+  - [End to end flow diagram](#end-to-end-flow-diagram)
+  - [Client communication flow](#client-communication-flow)
   - [Project Structure](#project-structure)
   - [Troubleshooting MCP Connections](#troubleshooting-mcp-connections)
   - [Security Notes](#security-notes)
@@ -529,6 +537,180 @@ npx -y @modelcontextprotocol/inspector stdio "dotnet run --project ToDoMCPServer
 ```
 
 ![Testing MCP Inspector - STDIO](<images/MCP Inspector STDIO.png>)
+
+---
+
+## Deploy to Azure App Service
+
+### Option A: Using Azure CLI
+1. Login:
+   ```bash
+   az login
+   ```
+2. Create resource group:
+   ```bash
+   az group create --name TodoMcpRG --location eastus
+   ```
+3. Deploy App Service:
+   ```bash
+   az webapp up --runtime "DOTNET|10.0" --sku B1 \
+     --name TodoMcpServerApp --resource-group TodoMcpRG
+   ```
+
+This command builds, publishes, and deploys your app.
+
+---
+
+### Option B: Using Visual Studio
+- Configure Publish Profile in Visual Studio.
+- Right‑click project → **Publish** → **Azure App Service (Windows/Linux)**.
+- Select subscription, resource group, and App Service plan.
+- Publish.
+
+---
+
+## Test Todo REST API in Azure
+- REST:
+  ```bash
+  curl https://TodoMcpServerApp.azurewebsites.net/todos
+  ```
+- MCP tools:
+  - `get_todos` → returns items
+  - `add_todo` → adds new item
+
+---
+
+## Secure Your Endpoint (Optional)
+Add JWT/OAuth authentication:
+
+```csharp
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://login.microsoftonline.com/<tenant-id>/v2.0";
+        options.Audience = "<app-client-id>";
+    });
+
+builder.Services.AddAuthorization();
+
+app.MapMcp("api/mcp").RequireAuthorization();
+```
+
+Then configure Azure AD App Registration for your server.
+
+---
+
+## Monitor & Scale
+- Enable **Application Insights** for logging MCP requests.
+- Configure **autoscaling** in App Service Plan for load handling.
+
+---
+
+## End to end flow diagram
+
+```mermaid
+flowchart TD
+    subgraph "MCP Clients Ecosystem"
+        A[Claude Desktop]
+        B[VS Code with MCP]
+        C[Cursor IDE]
+        D[Gemini Code Assist]
+        E[Custom MCP Client]
+    end
+
+    subgraph "Azure App Service Deployment"
+        F[Azure App Service<br/>TodoMCPServer]
+        G[Web API Layer<br/>ASP.NET Core 10]
+        H[MCP Server Layer<br/>Stdio Protocol]
+        I[Business Logic<br/>TodoTools.cs]
+        J[Data Access<br/>Entity Framework]
+        
+        subgraph "Database Options"
+            K1[Azure SQL Database]
+            K2[Cosmos DB]
+            K3[In-Memory<br/>Dev/Test]
+        end
+        
+        L[Azure Key Vault<br/>Secrets Management]
+        M[Application Insights<br/>Monitoring]
+        N[Azure Monitor<br/>Logging & Alerts]
+    end
+
+    subgraph "Development & CI/CD"
+        O[GitHub Repository]
+        P[GitHub Actions<br/>CI/CD Pipeline]
+        Q[Azure Container Registry]
+        R[Docker Container]
+    end
+
+    %% Client Connections
+    A -->|STDIO Protocol<br/>over SSH/WebSocket| F
+    B -->|STDIO Protocol<br/>VS Code Extension| F
+    C -->|STDIO Protocol<br/>Integrated Client| F
+    D -->|STDIO Protocol<br/>Google Extension| F
+    E -->|Custom MCP Protocol| F
+
+    %% Internal Azure Flow
+    F --> G
+    F --> H
+    G --> I
+    H --> I
+    I --> J
+    J --> K1
+    J --> K2
+    J --> K3
+    
+    %% Security & Monitoring
+    F --> L
+    F --> M
+    M --> N
+    
+    %% Deployment Flow
+    O --> P
+    P --> Q
+    Q --> R
+    R --> F
+
+    %% External Services
+    S[Azure Active Directory<br/>Authentication]
+    T[Azure API Management<br/>Optional Gateway]
+    U[Azure Front Door<br/>CDN & WAF]
+    
+    S --> F
+    T --> F
+    U --> F
+```
+## Client communication flow 
+
+```mermaid
+sequenceDiagram
+    participant C as MCP Client (Claude/VS Code)
+    participant APIM as Azure API Management (Optional)
+    participant AS as App Service
+    participant MCP as MCP Server
+    participant API as Web API
+    participant DB as Azure SQL
+
+    Note over C,DB: Initial Connection
+    C->>APIM: MCP Handshake Request
+    APIM->>AS: Forward Request
+    AS->>MCP: Initialize MCP Server
+    MCP-->>AS: Server Ready
+    AS-->>APIM: Handshake Response
+    APIM-->>C: Connection Established
+    
+    Note over C,DB: Tool Execution Flow
+    C->>APIM: Tool Request (e.g., get_all_todos)
+    APIM->>AS: Forward with Auth
+    AS->>MCP: Parse & Validate Request
+    MCP->>API: Call Internal API
+    API->>DB: Database Query
+    DB-->>API: Results
+    API-->>MCP: Formatted Data
+    MCP-->>AS: MCP-formatted Response
+    AS-->>APIM: Response
+    APIM-->>C: Final Result
+```
 
 ## Project Structure
 
