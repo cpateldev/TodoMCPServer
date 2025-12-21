@@ -1,5 +1,6 @@
-using CoreWebAPI;
+//using CoreWebAPI;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 namespace AspNetOpenAPIDemo
 {
@@ -28,49 +29,46 @@ namespace AspNetOpenAPIDemo
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+            builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));            
+            
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer((document, context, _) =>
+                {
+                    document.Info = new()
+                    {
+                        Title = "Todo API",
+                        Version = "v1",
+                        Description = """
+                                        Modern API for managing product catalogs.
+                                        Supports JSON and XML responses.
+                                        Rate limited to 1000 requests per hour.
+                                        """,
+                        Contact = new()
+                        {
+                            Name = "API Support",
+                            Email = "api@example.com",
+                            Url = new Uri("https://api.example.com/support")
+                        }
+                    };
+                    return Task.CompletedTask;
+                });
+            });
+
             builder.Services
                 .AddMcpServer()
-                //.WithTools<TemperatureConverterTool>()    // Old way of adding tools now replaced with WithToolsFromAssembly()    
-                //.WithTools<MultiplicationTool>()
-                //.WithTools<WeatherTools>()
-                //.WithTools<TodoTools>()
                 .WithStdioServerTransport()   // Disable this line to deploy this to Azure App Service.
                 .WithHttpTransport()
                 .WithToolsFromAssembly();
-
-            builder.Logging.AddConsole();  // If missing (common compilation error)
-            builder.Services.AddLogging(logging => logging.SetMinimumLevel(LogLevel.Debug));
-
-            /*
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:5000")
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            //.AllowCredentials() // Required if you use credentials
-                            .WithExposedHeaders("Mcp-Session-Id", "X-Custom-Header"); // <-- Expose the custom header
-                    });
-            });
-            */
-
+            
             var app = builder.Build();
-
-            //app.UseCors(MyAllowSpecificOrigins);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-                app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Todo API V1"));
+                app.MapOpenApi(); // Launch the app and navigate to https://localhost:{port}/openapi/v1.json to see the OpenAPI document.
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
@@ -82,7 +80,6 @@ namespace AspNetOpenAPIDemo
             app.MapMcp(pattern: "api/mcp");
 
             app.Run();
-            //await app.RunAsync();
         }
     }
 }

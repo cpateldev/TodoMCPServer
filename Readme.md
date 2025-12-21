@@ -177,22 +177,19 @@ using TodoMCPServer.Models;
 
 public static class TodoService
 {
-    public static IEndpointRouteBuilder MapEndPoints(this IEndpointRouteBuilder app)
+    public static void MapEndPoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/todoitems", TodoTools.GetAllTodos);
-        app.MapPost("/todoitems/complete", TodoTools.CompleteTodoItem);
-        app.MapGet("/todoitems/completed", TodoTools.GetCompletedTodos);
-        app.MapGet("/todoitems/{id}", TodoTools.GetTodoById);
-        app.MapPost("/todoitems/ids", TodoTools.GetTodosByIds);
-        app.MapGet("/todoitems/search/{name}", TodoTools.SearchTodosByName);
-        app.MapPost("/todoitems", TodoTools.AddTodoItem);
-        app.MapPatch("/todoitems/{id}", TodoTools.UpdateTodoItem);
-        // POST /todoitems/batch
-        app.MapPost("/todoitems/batch", TodoTools.BatchUpdateTodoItems);
-        app.MapDelete("/todoitems/{id}", TodoTools.DeleteTodoItem);
-        app.MapGet("/todoitems/exists/{id}", TodoTools.TodoExists);
+        app.MapGroup("/todoitems");
 
-        return app;
+        app.MapGet("/", TodoTools.GetAllTodos)
+            .WithSummary("Get All Todo Items")
+            .WithDescription("Retrieve all todo items, optionally filtered by status query parameter (e.g., ?status=completed).");
+
+        app.MapPost("/complete", TodoTools.CompleteTodoItem)
+            .WithSummary("Complete Todo Item")
+            .WithDescription("Mark a todo item as complete by its ID.");
+            
+        // Rest of the code
     }
 }
 

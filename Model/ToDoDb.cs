@@ -1,5 +1,4 @@
-﻿using CoreWebAPI;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 public class TodoDb : DbContext
 {

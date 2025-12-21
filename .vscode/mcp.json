@@ -3,14 +3,6 @@
     "TodoMcpServer": {
       "type": "http",
       "url": "http://localhost:5000/api/mcp"      
-    },
-    "PewSquareMCPServer": {
-      "type": "http",
-      "url": "https://pewsquareapi.azurewebsites.net/api/mcp"
-    },
-    "RemoteMCPServer": {
-      "type": "http",
-      "url": "https://mcptestpewwebserver.azurewebsites.net"
-    } 
+    }
   }
 }

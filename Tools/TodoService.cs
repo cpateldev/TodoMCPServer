@@ -1,47 +1,76 @@
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
-using CoreWebAPI;
 
 public static class TodoService
 {
+    public static void MapEndPoints(this IEndpointRouteBuilder app)
+    {        
+        app.MapGroup("/todoitems")
+            .WithTags("Todo Items")
+            .WithSummary("Manage Todo Items")
+            .WithDescription("APIs for managing todo items.");            
 
-    public static IEndpointRouteBuilder MapEndPoints(this IEndpointRouteBuilder app)
-    {
-        // Register additional endpoints here
-        /*
-        var endpointDefinitions = typeof(Program).Assembly
-            .GetTypes()
-            .Where(t => typeof(IEndpoint).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
-            .Select(t => Activator.CreateInstance(t) as IEndpoint)
-            .Cast<IEndpoint>();
-        */
-        app.MapGroup("/todoitems");
+        app.MapGet("/", TodoTools.GetAllTodos)
+            .WithSummary("Get All Todo Items")
+            .WithDescription("Retrieve all todo items, optionally filtered by status query parameter (e.g., ?status=completed).");
 
-        app.MapGet("/", TodoTools.GetAllTodos);
+        app.MapPost("/complete", TodoTools.CompleteTodoItem)
+            .WithSummary("Complete Todo Item")
+            .WithDescription("Mark a todo item as complete by its ID.");
 
-        app.MapPost("/complete", TodoTools.CompleteTodoItem);
+        app.MapGet("/completed", TodoTools.GetCompletedTodos)
+            .WithSummary("Get Completed Todo Items")
+            .WithDescription("Retrieve all completed todo items.");
 
-        app.MapGet("/completed", TodoTools.GetCompletedTodos);
-        app.MapGet("/{id}", TodoTools.GetTodoById);
-        app.MapPost("/ids", TodoTools.GetTodosByIds);
-        app.MapGet("/search/{name}", TodoTools.SearchTodosByName);
+        app.MapGet("/{id}", TodoTools.GetTodoById)
+            .WithSummary("Get Todo Item by ID")
+            .WithDescription("Retrieve a todo item by its ID.");
 
-        app.MapPost("/", TodoTools.AddTodoItem);
-        app.MapPatch("/{id}", TodoTools.UpdateTodoItem);
+        app.MapGet("/ids", TodoTools.GetTodosByIds)
+            .WithSummary("Get Todo Items by IDs")
+            .WithDescription("Retrieve multiple todo items by their IDs.");
+
+        app.MapGet("/search/{name}", TodoTools.SearchTodosByName)
+            .WithSummary("Search Todo Items by Name")
+            .WithDescription("Search todo items by name.");
+
+        app.MapPost("/", TodoTools.AddTodoItem)
+            .WithSummary("Add Todo Item")
+            .WithDescription("Add a new todo item.");
+
+        app.MapPatch("/{id}", TodoTools.UpdateTodoItem)
+            .WithSummary("Update Todo Item")
+            .WithDescription("Update an existing todo item by id.");
+
         // POST /batch
-        app.MapPost("/batch", TodoTools.BatchUpdateTodoItems);
-        app.MapDelete("/{id}", TodoTools.DeleteTodoItem);
-        app.MapGet("/exists/{id}", TodoTools.TodoExists);
+        app.MapPost("/batch", TodoTools.BatchUpdateTodoItems)
+            .WithSummary("Batch Update Todo Items")
+            .WithDescription("Batch update todo items.");
 
-        return app;
+        app.MapDelete("/{id}", TodoTools.DeleteTodoItem)
+            .WithSummary("Delete Todo Item")
+            .WithDescription("Delete a todo item by its ID.");
+
+        app.MapGet("/exists/{id}", TodoTools.TodoExists)
+            .WithSummary("Check if Todo Item Exists")
+            .WithDescription("Check if a todo item exists by its ID.");
     }
 }
 
+
+/// <summary>
+/// Todo Tools for managing todo items over MCP endpoint.
+/// </summary>
 [McpServerToolType]
 public static class TodoTools
 {
-    // Get all todo items
+    /// <summary>
+    /// Get all todo items
+    /// </summary>
+    /// <param name="status"></param>
+    /// <param name="db"></param>
+    /// <returns></returns>
     [McpServerTool(Name = "get_all_todos"), Description("Retrieve all todo items optionally filtered by status.")]
     public static async Task<IResult> GetAllTodos(string? status, TodoDb db)
     {
