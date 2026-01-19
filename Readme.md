@@ -274,14 +274,14 @@ Here are the NuGet packages used in this project:
 
 | Package                                                | Version           | Description                                                                                              |
 | ------------------------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------- |
-| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.0`          | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
-| `Microsoft.AspNetCore.OpenApi`                         | `10.0.0`          | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
-| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.0`          | Entity Framework Core in-memory database provider.                                                       |
-| `ModelContextProtocol`                                 | `0.4.1-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
-| `ModelContextProtocol.AspNetCore`                      | `0.4.1-preview.1` | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
-| `Swashbuckle.AspNetCore.SwaggerUI`                     | `10.0.1`          | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
+| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.2`          | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
+| `Microsoft.AspNetCore.OpenApi`                         | `10.0.2`          | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
+| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.2`          | Entity Framework Core in-memory database provider.                                                       |
+| `ModelContextProtocol`                                 | `0.6.0-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
+| `ModelContextProtocol.AspNetCore`                      | `0.6.0-preview.1` | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
+| `Scalar.AspNetCore`                     | `2.12.11`          | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
 
-> See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](DotnetMCPPackagesOverview.md)**
+> See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](ReadMe-MCPPackagesOverview.md)**
 
 ## Web API REST Endpoints
 
