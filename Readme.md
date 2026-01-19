@@ -547,6 +547,8 @@ npx -y @modelcontextprotocol/inspector http http://localhost:5000/api/mcp
 > MCP Inspector Command for `STDIO` transport:
 >
 > > For stdio transport: click `Connect` button from MCP Inspector UI, no need to start the server first as stdio transport will start the server process.
+>
+> Make sure your shell's or terminal's current directory is project directory where `ToDoMCPServer.csproj` file is located.
 
 ```bash
 npx -y @modelcontextprotocol/inspector stdio "dotnet run --project ToDoMCPServer.csproj"
