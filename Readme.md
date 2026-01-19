@@ -291,17 +291,17 @@ The API follows RESTful conventions with 11 endpoints for comprehensive Todo man
 
 | #   | HTTP Method | Endpoint                   | Description                    | Parameters                                    | Request Body                   | Response Type                |
 | --- | ----------- | -------------------------- | ------------------------------ | --------------------------------------------- | ------------------------------ | ---------------------------- |
-| 1   | **GET**     | `/todoitems`               | Get all todo items             | `status` (query, optional) - Filter by status | None                           | Array of `Todo`              |
-| 2   | **POST**    | `/todoitems/add`               | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
-| 3   | **POST**     | `/todoitems/{id}/complete`      | Mark a todo as complete        | `id` (path, required) - Todo ID              | None                           | `boolean`                    |
-| 4   | **GET**     | `/todoitems/completed`     | Get all completed todos        | None                                          | None                           | Array of `Todo`              |
-| 5   | **GET**     | `/todoitems/{id}`          | Get a specific todo by ID      | `id` (path, required) - Todo ID               | None                           | Single `Todo`                |
-| 6   | **PATCH**   | `/todoitems/update/{id}`          | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
-| 7   | **DELETE**  | `/todoitems/delete/{id}`          | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
-| 8   | **POST**    | `/todoitems/ids`           | Get multiple todos by IDs      | None                                          | Array of integers (IDs)        | Array of `Todo`              |
-| 9   | **GET**     | `/todoitems/search/{name}` | Search todos by name           | `name` (path, required) - Search term         | None                           | Array of `Todo`              |
-| 10  | **POST**    | `/todoitems/batch`         | Create multiple todos in batch | None                                          | Array of `Todo` objects        | Array of `Todo`              |
-| 11  | **GET**     | `/todoitems/exists/{id}`   | Check if a todo exists         | `id` (path, required) - Todo ID               | None                           | `boolean`                    |
+| 1   | **GET**     | `/`               | Get all todo items             | `status` (query, optional) - Filter by status | None                           | Array of `Todo`              |
+| 2   | **POST**    | `/add`               | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
+| 3   | **POST**     | `/{id}/complete`      | Mark a todo as complete        | `id` (path, required) - Todo ID              | None                           | `boolean`                    |
+| 4   | **GET**     | `/completed`     | Get all completed todos        | None                                          | None                           | Array of `Todo`              |
+| 5   | **GET**     | `/{id}`          | Get a specific todo by ID      | `id` (path, required) - Todo ID               | None                           | Single `Todo`                |
+| 6   | **PATCH**   | `/update/{id}`          | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
+| 7   | **DELETE**  | `/delete/{id}`          | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
+| 8   | **POST**    | `/ids`           | Get multiple todos by IDs      | None                                          | Array of integers (IDs)        | Array of `Todo`              |
+| 9   | **GET**     | `/search/{name}` | Search todos by name           | `name` (path, required) - Search term         | None                           | Array of `Todo`              |
+| 10  | **POST**    | `/batch`         | Create multiple todos in batch | None                                          | Array of `Todo` objects        | Array of `Todo`              |
+| 11  | **GET**     | `/exists/{id}`   | Check if a todo exists         | `id` (path, required) - Todo ID               | None                           | `boolean`                    |
 
 ### Swagger UI Usage
 
@@ -318,17 +318,17 @@ The MCP server provides 11 tools that mirror the REST API functionality, enablin
 
 | #   | Tool Name                   | Description                                            | Input Parameters                                               | Return Type                    | HTTP Equivalent                    |
 | --- | --------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- | ------------------------------ | ---------------------------------- |
-| 1   | **get_all_todos**           | Retrieve all todo items optionally filtered by status. | `status` (string, optional) - "completed" or null              | `List<Todo>`                   | `GET /todoitems`                   |
-| 2   | **get_todo_by_id**          | Retrieve a todo item by its ID.                        | `id` (int) - Todo ID                                           | `Todo?` (nullable)             | `GET /todoitems/{id}`              |
-| 3   | **get_todos_by_ids**        | Retrieve multiple todo items by their IDs.             | `ids` (int[]) - Array of Todo IDs                              | `List<Todo>`                   | `POST /todoitems/ids`              |
-| 4   | **search_todos_by_name**    | Search todo items by name.                             | `name` (string) - Search term                                  | `List<Todo>`                   | `GET /todoitems/search/{name}`     |
-| 5   | **add_todo_item**           | Add a new todo item.                                   | `todo` (Todo) - Todo object to create                          | `Todo`                         | `POST /todoitems`                  |
-| 6   | **update_todo_item**        | Update an existing todo item by id.                    | `id` (int) - Todo ID<br>`inputTodo` (Todo) - Updated todo data | `bool` (success)               | `PATCH /todoitems/{id}`            |
+| 1   | **get_all_todos**           | Retrieve all todo items optionally filtered by status. | `status` (string, optional) - "completed" or null              | `List<Todo>`                   | `GET /`                   |
+| 2   | **get_todo_by_id**          | Retrieve a todo item by its ID.                        | `id` (int) - Todo ID                                           | `Todo?` (nullable)             | `GET /{id}`              |
+| 3   | **get_todos_by_ids**        | Retrieve multiple todo items by their IDs.             | `ids` (int[]) - Array of Todo IDs                              | `List<Todo>`                   | `POST /ids`              |
+| 4   | **search_todos_by_name**    | Search todo items by name.                             | `name` (string) - Search term                                  | `List<Todo>`                   | `GET /search/{name}`     |
+| 5   | **add_todo_item**           | Add a new todo item.                                   | `todo` (Todo) - Todo object to create                          | `Todo`                         | `POST /add`                  |
+| 6   | **update_todo_item**        | Update an existing todo item by id.                    | `id` (int) - Todo ID<br>`inputTodo` (Todo) - Updated todo data | `bool` (success)               | `PATCH /update/{id}`            |
 | 7   | **batch_update_todo_items** | Batch update todo items.                               | `todos` (Todo[]) - Array of todos to update                    | `List<Todo>` (updated items)   | Multiple `PATCH` calls             |
-| 8   | **delete_todo_item**        | Delete a todo item by its ID.                          | `id` (int) - Todo ID                                           | `Todo?` (deleted item or null) | `DELETE /todoitems/{id}`           |
-| 9   | **get_completed_todos**     | Retrieve all completed todo items.                     | None                                                           | `List<Todo>`                   | `GET /todoitems/completed`         |
-| 10  | **complete_todo_item**      | Mark a todo item as complete by its ID.                | `id` (int) - Todo ID                                           | `bool` (success)               | `POST /todoitems/complete?id={id}` |
-| 11  | **todo_exists**             | Check if a todo item exists by its ID.                 | `id` (int) - Todo ID                                           | `bool` (exists)                | `GET /todoitems/exists/{id}`       |
+| 8   | **delete_todo_item**        | Delete a todo item by its ID.                          | `id` (int) - Todo ID                                           | `Todo?` (deleted item or null) | `DELETE /delete/{id}`           |
+| 9   | **get_completed_todos**     | Retrieve all completed todo items.                     | None                                                           | `List<Todo>`                   | `GET /completed`         |
+| 10  | **complete_todo_item**      | Mark a todo item as complete by its ID.                | `id` (int) - Todo ID                                           | `bool` (success)               | `POST /{id}/complete` |
+| 11  | **todo_exists**             | Check if a todo item exists by its ID.                 | `id` (int) - Todo ID                                           | `bool` (exists)                | `GET /exists/{id}`       |
 
 ### Prompt to Request Flow
 
