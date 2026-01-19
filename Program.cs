@@ -1,6 +1,7 @@
 //using CoreWebAPI;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using ModelContextProtocol.AspNetCore;
 
 namespace AspNetOpenAPIDemo
 {
@@ -28,9 +29,8 @@ namespace AspNetOpenAPIDemo
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));            
-            
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi(options =>
             {
@@ -57,11 +57,11 @@ namespace AspNetOpenAPIDemo
             });
 
             builder.Services
-                .AddMcpServer()
-                .WithStdioServerTransport()   // Disable this line to deploy this to Azure App Service.
-                .WithHttpTransport()
-                .WithToolsFromAssembly();
-            
+                .AddMcpServer()                 // Add MCP server capabilities
+                .WithStdioServerTransport()     // Disable this line to deploy this to Azure App Service.
+                .WithHttpTransport()            // Enable HTTP transport for web hosting
+                .WithToolsFromAssembly();       // Load MCP tools from the current assembly                
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -71,13 +71,16 @@ namespace AspNetOpenAPIDemo
                 app.MapScalarApiReference();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             PopulateTodoDB(app.Services);
 
             app.MapEndPoints();
 
             // Expose MCP endpoint
             app.MapMcp(pattern: "api/mcp");
+
+            // To expose MCP endpoint at /mcp, uncomment the following line:
+            // app.MapMcp(); // Expose MCP endpoint at /mcp
 
             app.Run();
         }

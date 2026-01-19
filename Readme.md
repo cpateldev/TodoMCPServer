@@ -88,6 +88,8 @@ TodoMCPServer is a comprehensive implementation that combines a Todo web API wit
 
 ## Architecture Diagram
 
+// Generate mermaid diagram for the architecture of the TodoMCPServer project.
+
 > requires mermaid extension in VS Code
 
 ```mermaid
@@ -105,6 +107,21 @@ flowchart TD
     J[VSCode Gemini Code Assist] --> D
     K[VSCode GitHub Copilot] --> D
     L[Visual Studio GitHub Copilot] --> D
+
+    classDef client fill:#3c4556,stroke:#5d6b84,stroke-width:2px,color:#d1d9e8
+    classDef layer fill:#2a3244,stroke:#3c4556,stroke-width:2px,color:#d1d9e8
+    classDef interface fill:#2e4a6e,stroke:#4a7bb9,stroke-width:2px,color:#d1d9e8
+    classDef decision fill:#4a3a7a,stroke:#7b6aa8,stroke-width:2px,color:#d1d9e8
+    classDef data fill:#2c554c,stroke:#4a8c7d,stroke-width:2px,color:#d1d9e8
+    
+    class A client
+    class H,I,J,K,L client
+    
+    class B decision
+    
+    class C,D interface
+    class E,F layer
+    class G data
 ```
 
 ## Features
@@ -155,17 +172,19 @@ dotnet add package ModelContextProtocol --version 0.4.1-preview.1
 dotnet add package ModelContextProtocol.AspNetCore --version 0.4.1-preview.1
 dotnet add package Swashbuckle.AspNetCore.SwaggerUI --version 10.0.1
 ```
+> Note: ModelContextProtocol is not actually needed for Asp.Net Core project.
+
 ### Update `Program.cs` to Configure MCP Server
 
 ```csharp
 builder.Services
-    .AddMcpServer()
+    .AddMcpServer()               // Add MCP server services support
     .WithStdioServerTransport()   // Use stdio transport for local AI clients
-    .WithHttpTransport()          // Use HTTP transport for web-based clients
+    .WithHttpTransport()          // Use HTTP transport for web-based clients [not needed if deploying to Azure App Service]
     .WithToolsFromAssembly();     // Automatically register all MCP tools in the assembly
 ```
 > [!WARNING]
-> NOTE: .WithStdioServerTransport() is commented out to allow deployment to Azure App Service as stdio transport is not supported there.
+> NOTE: .WithStdioServerTransport() needs to be commented out to allow deployment to Azure App Service as stdio transport is not supported there, else it will throw error during startup.
 
 ### Map REST Endpoints and add MCP Tools
 
@@ -755,7 +774,9 @@ TodoMCPServer/
 ## References
 
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
-- [Microsoft partners with Anthropic to create official C# SDK for Model Context Protocol](https://developer.microsoft.com/blog/microsoft-partners-with-anthropic-to-create-official-c-sdk-for-model-context-protocol)
+- [How to Build a Model Context Protocol (MCP) Server in C# and .NET with a Real Example](https://www.ottorinobruni.com/how-to-build-a-model-context-protocol-mcp-server-in-csharp-and-dotnet-with-a-real-example/) ***
+- [Official C# SDK for Model Context Protocol](https://developer.microsoft.com/blog/microsoft-partners-with-anthropic-to-create-official-c-sdk-for-model-context-protocol)
+- [Unleashing the Power of Model Context Protocol (MCP): A Game-Changer in AI Integration](https://techcommunity.microsoft.com/blog/educatordeveloperblog/unleashing-the-power-of-model-context-protocol-mcp-a-game-changer-in-ai-integrat/4397564) ***
 - [Create a minimal MCP server using C# and publish to NuGet](https://learn.microsoft.com/en-us/dotnet/ai/quickstarts/build-mcp-server#pack-and-publish-to-nuget)
 - [MCP Servers in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers?view=visualstudio)
 - [MCP Servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)

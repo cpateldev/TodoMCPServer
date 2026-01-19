@@ -92,3 +92,5 @@ Sources:
 - **Start with ModelContextProtocol** if you’re building protocol-level logic or experimenting with MCP.  
 - **Add ModelContextProtocol.AspNetCore** if you want to expose MCP endpoints over HTTP in a modern ASP.NET Core app.  
 - Always rely on **Microsoft.Extensions.Hosting** for structured hosting, DI, and lifecycle management—it’s the glue that makes MCP servers production-ready.
+
+---

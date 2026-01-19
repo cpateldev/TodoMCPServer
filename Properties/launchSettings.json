@@ -1,32 +1,12 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "TodoMCPServer": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "scalar/v1",
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5000;https://localhost:5001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "scalar/v1",
       "applicationUrl": "http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "commandName": "Project",      
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "scalar/v1",
-      "applicationUrl": "https://localhost:7000;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
