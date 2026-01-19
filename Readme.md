@@ -292,12 +292,12 @@ The API follows RESTful conventions with 11 endpoints for comprehensive Todo man
 | #   | HTTP Method | Endpoint                   | Description                    | Parameters                                    | Request Body                   | Response Type                |
 | --- | ----------- | -------------------------- | ------------------------------ | --------------------------------------------- | ------------------------------ | ---------------------------- |
 | 1   | **GET**     | `/todoitems`               | Get all todo items             | `status` (query, optional) - Filter by status | None                           | Array of `Todo`              |
-| 2   | **POST**    | `/todoitems`               | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
-| 3   | **GET**     | `/todoitems/complete`      | Mark a todo as complete        | `id` (query, required) - Todo ID              | None                           | `boolean`                    |
+| 2   | **POST**    | `/todoitems/add`               | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
+| 3   | **POST**     | `/todoitems/{id}/complete`      | Mark a todo as complete        | `id` (path, required) - Todo ID              | None                           | `boolean`                    |
 | 4   | **GET**     | `/todoitems/completed`     | Get all completed todos        | None                                          | None                           | Array of `Todo`              |
 | 5   | **GET**     | `/todoitems/{id}`          | Get a specific todo by ID      | `id` (path, required) - Todo ID               | None                           | Single `Todo`                |
-| 6   | **PATCH**   | `/todoitems/{id}`          | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
-| 7   | **DELETE**  | `/todoitems/{id}`          | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
+| 6   | **PATCH**   | `/todoitems/update/{id}`          | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
+| 7   | **DELETE**  | `/todoitems/delete/{id}`          | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
 | 8   | **POST**    | `/todoitems/ids`           | Get multiple todos by IDs      | None                                          | Array of integers (IDs)        | Array of `Todo`              |
 | 9   | **GET**     | `/todoitems/search/{name}` | Search todos by name           | `name` (path, required) - Search term         | None                           | Array of `Todo`              |
 | 10  | **POST**    | `/todoitems/batch`         | Create multiple todos in batch | None                                          | Array of `Todo` objects        | Array of `Todo`              |

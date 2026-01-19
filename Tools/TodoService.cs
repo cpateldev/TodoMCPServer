@@ -15,7 +15,7 @@ public static class TodoService
             .WithSummary("Get All Todo Items")
             .WithDescription("Retrieve all todo items, optionally filtered by status query parameter (e.g., ?status=completed).");
 
-        app.MapPost("/complete", TodoTools.CompleteTodoItem)
+        app.MapPost("/{id}/complete", TodoTools.CompleteTodoItem)
             .WithSummary("Complete Todo Item")
             .WithDescription("Mark a todo item as complete by its ID.");
 
@@ -35,20 +35,20 @@ public static class TodoService
             .WithSummary("Search Todo Items by Name")
             .WithDescription("Search todo items by name.");
 
-        app.MapPost("/", TodoTools.AddTodoItem)
+        app.MapPost("/add", TodoTools.AddTodoItem)
             .WithSummary("Add Todo Item")
             .WithDescription("Add a new todo item.");
 
-        app.MapPatch("/{id}", TodoTools.UpdateTodoItem)
+        app.MapPatch("/update/{id}", TodoTools.UpdateTodoItem)
             .WithSummary("Update Todo Item")
             .WithDescription("Update an existing todo item by id.");
 
         // POST /batch
-        app.MapPost("/batch", TodoTools.BatchUpdateTodoItems)
+        app.MapPost("/batchupdate", TodoTools.BatchUpdateTodoItems)
             .WithSummary("Batch Update Todo Items")
             .WithDescription("Batch update todo items.");
 
-        app.MapDelete("/{id}", TodoTools.DeleteTodoItem)
+        app.MapDelete("/delete/{id}", TodoTools.DeleteTodoItem)
             .WithSummary("Delete Todo Item")
             .WithDescription("Delete a todo item by its ID.");
 
