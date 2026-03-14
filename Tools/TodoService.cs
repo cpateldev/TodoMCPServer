@@ -5,19 +5,19 @@ using Microsoft.EntityFrameworkCore;
 public static class TodoService
 {
     public static void MapEndPoints(this IEndpointRouteBuilder app)
-    {        
+    {
         app.MapGroup("/todoitems")
             .WithTags("Todo Items")
             .WithSummary("Manage Todo Items")
-            .WithDescription("APIs for managing todo items.");            
+            .WithDescription("APIs for managing todo items.");
 
         app.MapGet("/", TodoTools.GetAllTodos)
             .WithSummary("Get All Todo Items")
             .WithDescription("Retrieve all todo items, optionally filtered by status query parameter (e.g., ?status=completed).");
 
-        app.MapPost("/{id}/complete", TodoTools.CompleteTodoItem)
-            .WithSummary("Complete Todo Item")
-            .WithDescription("Mark a todo item as complete by its ID.");
+        app.MapPost("/{id}/changestatus", TodoTools.ChangeStatusTodoItem)
+            .WithSummary("Change Todo Item Status")
+            .WithDescription("Change the status of a todo item by its ID with optional isComplete parameter (default is true).");
 
         app.MapGet("/completed", TodoTools.GetCompletedTodos)
             .WithSummary("Get Completed Todo Items")
@@ -110,6 +110,37 @@ public static class TodoTools
         return TypedResults.Ok(todos);
     }
 
+    // Get completed todo items
+    [McpServerTool(Name = "get_completed_todos"), Description("Retrieve all completed todo items.")]
+    public static async Task<IResult> GetCompletedTodos(TodoDb db)
+    {
+        var todos = await db.Todos.Where(t => t.IsComplete).ToListAsync();
+        return TypedResults.Ok(todos);
+    }
+
+    // Change a todo item status to complete to incomplete by ID with default to complete.
+    [McpServerTool(Name = "change_iscomplete_status_todo_item"), Description("Change the iscompplete status of a todo item by its ID with optional isComplete parameter (default is true). For example mark them completed or incomplete.")]
+    public static async Task<IResult> ChangeStatusTodoItem(int id, TodoDb db, bool isComplete = true)
+    {
+        var todo = await db.Todos.FindAsync(id);
+        if (todo != null)
+        {
+            todo.IsComplete = isComplete;
+            await db.SaveChangesAsync();
+            return TypedResults.Ok(todo);
+        }
+        return TypedResults.NotFound();
+    }
+
+    // Helper method to check if a Todo item exists    
+    [McpServerTool(Name = "todo_exists"), Description("Check if a todo item exists by its ID.")]
+    public static async Task<IResult> TodoExists(int id, TodoDb db)
+    {
+        var exists = await db.Todos.AnyAsync(e => e.Id == id);
+        return TypedResults.Ok(exists);
+    }
+
+
     // Add a new todo item
     [McpServerTool(Name = "add_todo_item"), Description("Add a new todo item.")]
     public static async Task<IResult> AddTodoItem(Todo todo, TodoDb db)
@@ -126,34 +157,34 @@ public static class TodoTools
         var todo = await db.Todos.FindAsync(id);
 
         if (todo is null) return TypedResults.NotFound();
-        todo.Name = inputTodo.Name;
-        todo.IsComplete = inputTodo.IsComplete;
-        todo.Tag = inputTodo.Tag;
+        todo.Name = inputTodo.Name ?? todo.Name;
+        todo.Tag = inputTodo.Tag ?? todo.Tag;
 
         await db.SaveChangesAsync();
 
         return TypedResults.Ok(todo);
     }
 
-    // Batch update todo items
+    // Batch update todo items for example update specific todos with new tags
+
     [McpServerTool(Name = "batch_update_todo_items"), Description("Batch update todo items.")]
     public static async Task<IResult> BatchUpdateTodoItems(Todo[] todos, TodoDb db)
     {
-        var updatedTodos = new List<Todo>();
+        //var updatedTodos = new List<Todo>();
 
         foreach (var inputTodo in todos)
         {
             var todo = await db.Todos.FindAsync(inputTodo.Id);
             if (todo != null)
             {
-                todo.Name = inputTodo.Name;
-                todo.IsComplete = inputTodo.IsComplete;
-                updatedTodos.Add(todo);
+                todo.Name = inputTodo.Name ?? todo.Name;
+                todo.Tag = inputTodo.Tag ?? todo.Tag;
+                db.Update(todo);
             }
         }
 
         await db.SaveChangesAsync();
-        return TypedResults.Ok(updatedTodos);
+        return TypedResults.Ok(todos);
     }
 
     // Delete a todo item by ID
@@ -168,35 +199,5 @@ public static class TodoTools
             return TypedResults.Ok(todo);
         }
         return TypedResults.NotFound();
-    }
-
-    // Get completed todo items
-    [McpServerTool(Name = "get_completed_todos"), Description("Retrieve all completed todo items.")]
-    public static async Task<IResult> GetCompletedTodos(TodoDb db)
-    {
-        var todos = await db.Todos.Where(t => t.IsComplete).ToListAsync();
-        return TypedResults.Ok(todos);
-    }
-
-    // Complete a todo item by ID
-    [McpServerTool(Name = "complete_todo_item"), Description("Mark a todo item as complete by its ID.")]
-    public static async Task<IResult> CompleteTodoItem(int id, TodoDb db)
-    {
-        var todo = await db.Todos.FindAsync(id);
-        if (todo != null)
-        {
-            todo.IsComplete = true;
-            await db.SaveChangesAsync();
-            return TypedResults.Ok(todo);
-        }
-        return TypedResults.NotFound();
-    }
-
-    // Helper method to check if a Todo item exists    
-    [McpServerTool(Name = "todo_exists"), Description("Check if a todo item exists by its ID.")]
-    public static async Task<IResult> TodoExists(int id, TodoDb db)
-    {
-        var exists = await db.Todos.AnyAsync(e => e.Id == id);
-        return TypedResults.Ok(exists);
     }
 }
