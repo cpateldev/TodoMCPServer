@@ -88,8 +88,6 @@ TodoMCPServer is a comprehensive implementation that combines a Todo web API wit
 
 ## Architecture Diagram
 
-// Generate mermaid diagram for the architecture of the TodoMCPServer project.
-
 > requires mermaid extension in VS Code
 
 ```mermaid
@@ -113,12 +111,12 @@ flowchart TD
     classDef interface fill:#2e4a6e,stroke:#4a7bb9,stroke-width:2px,color:#d1d9e8
     classDef decision fill:#4a3a7a,stroke:#7b6aa8,stroke-width:2px,color:#d1d9e8
     classDef data fill:#2c554c,stroke:#4a8c7d,stroke-width:2px,color:#d1d9e8
-    
+
     class A client
     class H,I,J,K,L client
-    
+
     class B decision
-    
+
     class C,D interface
     class E,F layer
     class G data
@@ -162,16 +160,18 @@ flowchart TD
 dotnet new webapi -n TodoMCPServer
 cd TodoMCPServer
 ```
+
 ### Add Required NuGet Packages
 
 ```bash
-dotnet add package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore --version 10.0.0
-dotnet add package Microsoft.AspNetCore.OpenApi --version 10.0.0
-dotnet add package Microsoft.EntityFrameworkCore.InMemory --version 10.0.0
-dotnet add package ModelContextProtocol --version 0.4.1-preview.1
-dotnet add package ModelContextProtocol.AspNetCore --version 0.4.1-preview.1
-dotnet add package Swashbuckle.AspNetCore.SwaggerUI --version 10.0.1
+dotnet add package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore --version 10.0.5
+dotnet add package Microsoft.AspNetCore.OpenApi --version 10.0.5
+dotnet add package Microsoft.EntityFrameworkCore.InMemory --version 10.0.5
+dotnet add package ModelContextProtocol --version 1.1.0
+dotnet add package ModelContextProtocol.AspNetCore --version 1.1.0
+dotnet add package Scalar.AspNetCore --version 2.13.8
 ```
+
 > Note: ModelContextProtocol is not actually needed for Asp.Net Core project.
 
 ### Update `Program.cs` to Configure MCP Server
@@ -183,6 +183,7 @@ builder.Services
     .WithHttpTransport()          // Use HTTP transport for web-based clients [not needed if deploying to Azure App Service]
     .WithToolsFromAssembly();     // Automatically register all MCP tools in the assembly
 ```
+
 > [!WARNING]
 > NOTE: .WithStdioServerTransport() needs to be commented out to allow deployment to Azure App Service as stdio transport is not supported there, else it will throw error during startup.
 
@@ -207,7 +208,7 @@ public static class TodoService
         app.MapPost("/complete", TodoTools.CompleteTodoItem)
             .WithSummary("Complete Todo Item")
             .WithDescription("Mark a todo item as complete by its ID.");
-            
+
         // Rest of the code
     }
 }
@@ -232,7 +233,6 @@ public static class TodoTools
 }
 
 ```
-
 
 ## How to Run the Application
 
@@ -272,14 +272,14 @@ dotnet watch run
 
 Here are the NuGet packages used in this project:
 
-| Package                                                | Version           | Description                                                                                              |
-| ------------------------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------- |
-| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.2`          | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
-| `Microsoft.AspNetCore.OpenApi`                         | `10.0.2`          | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
-| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.2`          | Entity Framework Core in-memory database provider.                                                       |
-| `ModelContextProtocol`                                 | `0.6.0-preview.1` | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
-| `ModelContextProtocol.AspNetCore`                      | `0.6.0-preview.1` | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
-| `Scalar.AspNetCore`                     | `2.12.11`          | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
+| Package                                                | Version  | Description                                                                                              |
+| ------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
+| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.5` | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
+| `Microsoft.AspNetCore.OpenApi`                         | `10.0.5` | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
+| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.5` | Entity Framework Core in-memory database provider.                                                       |
+| `ModelContextProtocol`                                 | `1.1.0`  | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
+| `ModelContextProtocol.AspNetCore`                      | `1.1.0`  | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
+| `Scalar.AspNetCore`                                    | `2.13.8` | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
 
 > See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](ReadMe-MCPPackagesOverview.md)**
 
@@ -289,15 +289,15 @@ The API follows RESTful conventions with 11 endpoints for comprehensive Todo man
 
 ### Endpoint Details Table
 
-| #   | HTTP Method | Endpoint                   | Description                    | Parameters                                    | Request Body                   | Response Type                |
-| --- | ----------- | -------------------------- | ------------------------------ | --------------------------------------------- | ------------------------------ | ---------------------------- |
-| 1   | **GET**     | `/`               | Get all todo items             | `status` (query, optional) - Filter by status | None                           | Array of `Todo`              |
-| 2   | **POST**    | `/add`               | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
-| 3   | **POST**     | `/{id}/complete`      | Mark a todo as complete        | `id` (path, required) - Todo ID              | None                           | `boolean`                    |
+| #   | HTTP Method | Endpoint         | Description                    | Parameters                                    | Request Body                   | Response Type                |
+| --- | ----------- | ---------------- | ------------------------------ | --------------------------------------------- | ------------------------------ | ---------------------------- |
+| 1   | **GET**     | `/`              | Get all todo items             | `status` (query, optional) - Filter by status | None                           | Array of `Todo`              |
+| 2   | **POST**    | `/add`           | Create a new todo item         | None                                          | `Todo` object                  | Single `Todo`                |
+| 3   | **POST**    | `/{id}/complete` | Mark a todo as complete        | `id` (path, required) - Todo ID               | None                           | `boolean`                    |
 | 4   | **GET**     | `/completed`     | Get all completed todos        | None                                          | None                           | Array of `Todo`              |
 | 5   | **GET**     | `/{id}`          | Get a specific todo by ID      | `id` (path, required) - Todo ID               | None                           | Single `Todo`                |
-| 6   | **PATCH**   | `/update/{id}`          | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
-| 7   | **DELETE**  | `/delete/{id}`          | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
+| 6   | **PATCH**   | `/update/{id}`   | Update a specific todo         | `id` (path, required) - Todo ID               | `Todo` object (partial update) | `boolean`                    |
+| 7   | **DELETE**  | `/delete/{id}`   | Delete a specific todo         | `id` (path, required) - Todo ID               | None                           | Single `Todo` (deleted item) |
 | 8   | **POST**    | `/ids`           | Get multiple todos by IDs      | None                                          | Array of integers (IDs)        | Array of `Todo`              |
 | 9   | **GET**     | `/search/{name}` | Search todos by name           | `name` (path, required) - Search term         | None                           | Array of `Todo`              |
 | 10  | **POST**    | `/batch`         | Create multiple todos in batch | None                                          | Array of `Todo` objects        | Array of `Todo`              |
@@ -316,19 +316,19 @@ The MCP server provides 11 tools that mirror the REST API functionality, enablin
 
 ### MCP Tools Table
 
-| #   | Tool Name                   | Description                                            | Input Parameters                                               | Return Type                    | HTTP Equivalent                    |
-| --- | --------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- | ------------------------------ | ---------------------------------- |
-| 1   | **get_all_todos**           | Retrieve all todo items optionally filtered by status. | `status` (string, optional) - "completed" or null              | `List<Todo>`                   | `GET /`                   |
-| 2   | **get_todo_by_id**          | Retrieve a todo item by its ID.                        | `id` (int) - Todo ID                                           | `Todo?` (nullable)             | `GET /{id}`              |
-| 3   | **get_todos_by_ids**        | Retrieve multiple todo items by their IDs.             | `ids` (int[]) - Array of Todo IDs                              | `List<Todo>`                   | `POST /ids`              |
-| 4   | **search_todos_by_name**    | Search todo items by name.                             | `name` (string) - Search term                                  | `List<Todo>`                   | `GET /search/{name}`     |
-| 5   | **add_todo_item**           | Add a new todo item.                                   | `todo` (Todo) - Todo object to create                          | `Todo`                         | `POST /add`                  |
-| 6   | **update_todo_item**        | Update an existing todo item by id.                    | `id` (int) - Todo ID<br>`inputTodo` (Todo) - Updated todo data | `bool` (success)               | `PATCH /update/{id}`            |
-| 7   | **batch_update_todo_items** | Batch update todo items.                               | `todos` (Todo[]) - Array of todos to update                    | `List<Todo>` (updated items)   | Multiple `PATCH` calls             |
-| 8   | **delete_todo_item**        | Delete a todo item by its ID.                          | `id` (int) - Todo ID                                           | `Todo?` (deleted item or null) | `DELETE /delete/{id}`           |
-| 9   | **get_completed_todos**     | Retrieve all completed todo items.                     | None                                                           | `List<Todo>`                   | `GET /completed`         |
-| 10  | **complete_todo_item**      | Mark a todo item as complete by its ID.                | `id` (int) - Todo ID                                           | `bool` (success)               | `POST /{id}/complete` |
-| 11  | **todo_exists**             | Check if a todo item exists by its ID.                 | `id` (int) - Todo ID                                           | `bool` (exists)                | `GET /exists/{id}`       |
+| #   | Tool Name                   | Description                                            | Input Parameters                                               | Return Type                    | HTTP Equivalent        |
+| --- | --------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- | ------------------------------ | ---------------------- |
+| 1   | **get_all_todos**           | Retrieve all todo items optionally filtered by status. | `status` (string, optional) - "completed" or null              | `List<Todo>`                   | `GET /`                |
+| 2   | **get_todo_by_id**          | Retrieve a todo item by its ID.                        | `id` (int) - Todo ID                                           | `Todo?` (nullable)             | `GET /{id}`            |
+| 3   | **get_todos_by_ids**        | Retrieve multiple todo items by their IDs.             | `ids` (int[]) - Array of Todo IDs                              | `List<Todo>`                   | `POST /ids`            |
+| 4   | **search_todos_by_name**    | Search todo items by name.                             | `name` (string) - Search term                                  | `List<Todo>`                   | `GET /search/{name}`   |
+| 5   | **add_todo_item**           | Add a new todo item.                                   | `todo` (Todo) - Todo object to create                          | `Todo`                         | `POST /add`            |
+| 6   | **update_todo_item**        | Update an existing todo item by id.                    | `id` (int) - Todo ID<br>`inputTodo` (Todo) - Updated todo data | `bool` (success)               | `PATCH /update/{id}`   |
+| 7   | **batch_update_todo_items** | Batch update todo items.                               | `todos` (Todo[]) - Array of todos to update                    | `List<Todo>` (updated items)   | Multiple `PATCH` calls |
+| 8   | **delete_todo_item**        | Delete a todo item by its ID.                          | `id` (int) - Todo ID                                           | `Todo?` (deleted item or null) | `DELETE /delete/{id}`  |
+| 9   | **get_completed_todos**     | Retrieve all completed todo items.                     | None                                                           | `List<Todo>`                   | `GET /completed`       |
+| 10  | **complete_todo_item**      | Mark a todo item as complete by its ID.                | `id` (int) - Todo ID                                           | `bool` (success)               | `POST /{id}/complete`  |
+| 11  | **todo_exists**             | Check if a todo item exists by its ID.                 | `id` (int) - Todo ID                                           | `bool` (exists)                | `GET /exists/{id}`     |
 
 ### Prompt to Request Flow
 
@@ -561,6 +561,7 @@ npx -y @modelcontextprotocol/inspector stdio "dotnet run --project ToDoMCPServer
 ## Deploy to Azure App Service
 
 ### Option A: Using Azure CLI
+
 1. Login:
    ```bash
    az login
@@ -580,6 +581,7 @@ This command builds, publishes, and deploys your app.
 ---
 
 ### Option B: Using Visual Studio
+
 - Configure Publish Profile in Visual Studio.
 - Right‑click project → **Publish** → **Azure App Service (Windows/Linux)**.
 - Select subscription, resource group, and App Service plan.
@@ -588,6 +590,7 @@ This command builds, publishes, and deploys your app.
 ---
 
 ## Test Todo REST API in Azure
+
 - REST:
   ```bash
   curl https://TodoMcpServerApp.azurewebsites.net/todos
@@ -599,6 +602,7 @@ This command builds, publishes, and deploys your app.
 ---
 
 ## Secure Your Endpoint (Optional)
+
 Add JWT/OAuth authentication:
 
 ```csharp
@@ -619,6 +623,7 @@ Then configure Azure AD App Registration for your server.
 ---
 
 ## Monitor & Scale
+
 - Enable **Application Insights** for logging MCP requests.
 - Configure **autoscaling** in App Service Plan for load handling.
 
@@ -642,13 +647,13 @@ flowchart TD
         H[MCP Server Layer<br/>Stdio Protocol]
         I[Business Logic<br/>TodoTools.cs]
         J[Data Access<br/>Entity Framework]
-        
+
         subgraph "Database Options"
             K1[Azure SQL Database]
             K2[Cosmos DB]
             K3[In-Memory<br/>Dev/Test]
         end
-        
+
         L[Azure Key Vault<br/>Secrets Management]
         M[Application Insights<br/>Monitoring]
         N[Azure Monitor<br/>Logging & Alerts]
@@ -677,12 +682,12 @@ flowchart TD
     J --> K1
     J --> K2
     J --> K3
-    
+
     %% Security & Monitoring
     F --> L
     F --> M
     M --> N
-    
+
     %% Deployment Flow
     O --> P
     P --> Q
@@ -693,12 +698,13 @@ flowchart TD
     S[Azure Active Directory<br/>Authentication]
     T[Azure API Management<br/>Optional Gateway]
     U[Azure Front Door<br/>CDN & WAF]
-    
+
     S --> F
     T --> F
     U --> F
 ```
-## Client communication flow 
+
+## Client communication flow
 
 ```mermaid
 sequenceDiagram
@@ -716,7 +722,7 @@ sequenceDiagram
     MCP-->>AS: Server Ready
     AS-->>APIM: Handshake Response
     APIM-->>C: Connection Established
-    
+
     Note over C,DB: Tool Execution Flow
     C->>APIM: Tool Request (e.g., get_all_todos)
     APIM->>AS: Forward with Auth
@@ -776,9 +782,9 @@ TodoMCPServer/
 ## References
 
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
-- [How to Build a Model Context Protocol (MCP) Server in C# and .NET with a Real Example](https://www.ottorinobruni.com/how-to-build-a-model-context-protocol-mcp-server-in-csharp-and-dotnet-with-a-real-example/) ***
+- [How to Build a Model Context Protocol (MCP) Server in C# and .NET with a Real Example](https://www.ottorinobruni.com/how-to-build-a-model-context-protocol-mcp-server-in-csharp-and-dotnet-with-a-real-example/) \*\*\*
 - [Official C# SDK for Model Context Protocol](https://developer.microsoft.com/blog/microsoft-partners-with-anthropic-to-create-official-c-sdk-for-model-context-protocol)
-- [Unleashing the Power of Model Context Protocol (MCP): A Game-Changer in AI Integration](https://techcommunity.microsoft.com/blog/educatordeveloperblog/unleashing-the-power-of-model-context-protocol-mcp-a-game-changer-in-ai-integrat/4397564) ***
+- [Unleashing the Power of Model Context Protocol (MCP): A Game-Changer in AI Integration](https://techcommunity.microsoft.com/blog/educatordeveloperblog/unleashing-the-power-of-model-context-protocol-mcp-a-game-changer-in-ai-integrat/4397564) \*\*\*
 - [Create a minimal MCP server using C# and publish to NuGet](https://learn.microsoft.com/en-us/dotnet/ai/quickstarts/build-mcp-server#pack-and-publish-to-nuget)
 - [MCP Servers in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers?view=visualstudio)
 - [MCP Servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
