@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 public static class TodoService
 {
+    /// <summary>
+    /// Map the endpoints for managing todo items.
+    /// </summary>
+    /// <param name="app">The endpoint route builder.</param>
     public static void MapEndPoints(this IEndpointRouteBuilder app)
     {
         app.MapGroup("/todoitems")
@@ -66,11 +70,11 @@ public static class TodoService
 public static class TodoTools
 {
     /// <summary>
-    /// Get all todo items
+    /// Get all todo items optionally filtered by status.
     /// </summary>
-    /// <param name="status"></param>
-    /// <param name="db"></param>
-    /// <returns></returns>
+    /// <param name="status">The status to filter by (e.g., "completed").</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>A list of todo items.</returns>
     [McpServerTool(Name = "get_all_todos"), Description("Retrieve all todo items optionally filtered by status.")]
     public static async Task<IResult> GetAllTodos(string? status, TodoDb db)
     {
@@ -84,7 +88,12 @@ public static class TodoTools
         }
     }
 
-    // Get a todo item by ID
+    /// <summary>
+    /// Get a todo item by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the todo item.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>The todo item if found; otherwise, a not found result.</returns>    
     [McpServerTool(Name = "get_todo_by_id"), Description("Retrieve a todo item by its ID.")]
     public static async Task<IResult> GetTodoById(int id, TodoDb db)
     {
@@ -92,7 +101,12 @@ public static class TodoTools
         return todo is not null ? TypedResults.Ok(todo) : TypedResults.NotFound();
     }
 
-    // Get todos by multiple IDs
+    /// <summary>
+    /// Get todo items by their IDs.
+    /// </summary>
+    /// <param name="ids">The IDs of the todo items.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>A list of todo items.</returns>
     [McpServerTool(Name = "get_todos_by_ids"), Description("Retrieve multiple todo items by their IDs.")]
     public static async Task<IResult> GetTodosByIds(int[] ids, TodoDb db)
     {
@@ -100,7 +114,12 @@ public static class TodoTools
         return TypedResults.Ok(todos);
     }
 
-    // Search todos by name
+    /// <summary>
+    /// Search todo items by name.
+    /// </summary>
+    /// <param name="name">The name to search for.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>A list of todo items that match the search criteria.</returns>
     [McpServerTool(Name = "search_todos_by_name"), Description("Search todo items by name.")]
     public static async Task<IResult> SearchTodosByName(string name, TodoDb db)
     {
@@ -110,7 +129,11 @@ public static class TodoTools
         return TypedResults.Ok(todos);
     }
 
-    // Get completed todo items
+    /// <summary>
+    /// Get all completed todo items.
+    /// </summary>
+    /// <param name="db">The database context.</param>
+    /// <returns>A list of completed todo items.</returns>
     [McpServerTool(Name = "get_completed_todos"), Description("Retrieve all completed todo items.")]
     public static async Task<IResult> GetCompletedTodos(TodoDb db)
     {
@@ -118,7 +141,13 @@ public static class TodoTools
         return TypedResults.Ok(todos);
     }
 
-    // Change a todo item status to complete to incomplete by ID with default to complete.
+    /// <summary>
+    /// Change the isComplete status of a todo item by its ID with optional isComplete parameter (default is true). For example mark them completed or incomplete.
+    /// </summary>
+    /// <param name="id">The ID of the todo item.</param>
+    /// <param name="db">The database context.</param>
+    /// <param name="isComplete">The new isComplete status (default is true).</param>
+    /// <returns>The updated todo item if found; otherwise, a not found result.</returns>
     [McpServerTool(Name = "change_iscomplete_status_todo_item"), Description("Change the iscompplete status of a todo item by its ID with optional isComplete parameter (default is true). For example mark them completed or incomplete.")]
     public static async Task<IResult> ChangeStatusTodoItem(int id, TodoDb db, bool isComplete = true)
     {
@@ -132,7 +161,12 @@ public static class TodoTools
         return TypedResults.NotFound();
     }
 
-    // Helper method to check if a Todo item exists    
+    /// <summary>
+    /// Helper method to check if a Todo item exists by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the todo item.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>True if the todo item exists; otherwise, false.</returns>
     [McpServerTool(Name = "todo_exists"), Description("Check if a todo item exists by its ID.")]
     public static async Task<IResult> TodoExists(int id, TodoDb db)
     {
@@ -140,8 +174,12 @@ public static class TodoTools
         return TypedResults.Ok(exists);
     }
 
-
-    // Add a new todo item
+    /// <summary>
+    /// Add a new todo item.
+    /// </summary>
+    /// <param name="todo">The todo item to add.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>The added todo item.</returns>
     [McpServerTool(Name = "add_todo_item"), Description("Add a new todo item.")]
     public static async Task<IResult> AddTodoItem(Todo todo, TodoDb db)
     {
@@ -150,7 +188,13 @@ public static class TodoTools
         return TypedResults.Ok(todo);
     }
 
-    // Update an existing todo item
+    /// <summary>
+    /// Update an existing todo item by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the todo item to update.</param>
+    /// <param name="inputTodo">The updated todo item data.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>The updated todo item if found; otherwise, a not found result.</returns>
     [McpServerTool(Name = "update_todo_item"), Description("Update an existing todo item by id.")]
     public static async Task<IResult> UpdateTodoItem(int id, Todo inputTodo, TodoDb db)
     {
@@ -165,8 +209,12 @@ public static class TodoTools
         return TypedResults.Ok(todo);
     }
 
-    // Batch update todo items for example update specific todos with new tags
-
+    /// <summary>
+    /// Batch update todo items.
+    /// </summary>
+    /// <param name="todos">The array of todo items to update.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>The updated todo items.</returns>
     [McpServerTool(Name = "batch_update_todo_items"), Description("Batch update todo items.")]
     public static async Task<IResult> BatchUpdateTodoItems(Todo[] todos, TodoDb db)
     {
@@ -187,7 +235,12 @@ public static class TodoTools
         return TypedResults.Ok(todos);
     }
 
-    // Delete a todo item by ID
+    /// <summary>
+    /// Delete a todo item by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the todo item to delete.</param>
+    /// <param name="db">The database context.</param>
+    /// <returns>The deleted todo item if found; otherwise, a not found result.</returns>
     [McpServerTool(Name = "delete_todo_item"), Description("Delete a todo item by its ID.")]
     public static async Task<IResult> DeleteTodoItem(int id, TodoDb db)
     {
