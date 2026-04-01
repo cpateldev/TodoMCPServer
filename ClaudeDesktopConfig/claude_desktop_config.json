@@ -1,13 +1,21 @@
 {
   "mcpServers": {
-    "TodoMcpHttpServer": {      
+    "TodoMcpHttpServer": {
       "type": "stdio",
       "command": "dotnet",
       "args": [
         "run",
+        "--no-build",
+        "--no-launch-profile",
         "--project",
-        "J:\\SRC\\AspNet\\TodoMCPServer\\TodoMCPServer.csproj"
+        "D:\\SRC\\MCP\\TodoMCPServer\\TodoMCPServer.csproj"
       ]
     }
+  },
+  "preferences": {
+    "coworkWebSearchEnabled": true,
+    "coworkScheduledTasksEnabled": false,
+    "ccdScheduledTasksEnabled": false,
+    "sidebarMode": "chat"
   }
 }

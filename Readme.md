@@ -163,12 +163,29 @@ cd TodoMCPServer
 
 ### Add Required NuGet Packages
 
+Install the required packages with the following commands:
+
+Here are the NuGet packages used in this project:
+
+| Package                                                | Version  | Description                                                                                              |
+| ------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
+| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.5` | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
+| `Microsoft.AspNetCore.OpenApi`                         | `10.0.5` | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
+| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.5` | Entity Framework Core in-memory database provider.                                                       |
+| `ModelContextProtocol`                                 | `1.2.0`  | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
+| `ModelContextProtocol.AspNetCore`                      | `1.2.0`  | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
+| `Scalar.AspNetCore`                                    | `2.13.8` | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
+
+> See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](ReadMe-MCPPackagesOverview.md)**
+
+Install these packages with:
+
 ```bash
 dotnet add package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore --version 10.0.5
 dotnet add package Microsoft.AspNetCore.OpenApi --version 10.0.5
 dotnet add package Microsoft.EntityFrameworkCore.InMemory --version 10.0.5
-dotnet add package ModelContextProtocol --version 1.1.0
-dotnet add package ModelContextProtocol.AspNetCore --version 1.1.0
+dotnet add package ModelContextProtocol.AspNetCore --version 1.2.0
+dotnet add package ModelContextProtocol --version 1.2.0
 dotnet add package Scalar.AspNetCore --version 2.13.8
 ```
 
@@ -268,21 +285,6 @@ dotnet watch run
 - **Visual Studio**: Open `TodoMCPServer.sln` and press F5
 - **VS Code**: Open folder and use `.NET Core Launch` configuration
 
-## Package Dependencies
-
-Here are the NuGet packages used in this project:
-
-| Package                                                | Version  | Description                                                                                              |
-| ------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
-| `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore` | `10.0.5` | ASP.NET Core middleware for Entity Framework Core error pages.                                           |
-| `Microsoft.AspNetCore.OpenApi`                         | `10.0.5` | Provides APIs for generating and serving OpenAPI documents for web APIs built with ASP.NET Core.         |
-| `Microsoft.EntityFrameworkCore.InMemory`               | `10.0.5` | Entity Framework Core in-memory database provider.                                                       |
-| `ModelContextProtocol`                                 | `1.1.0`  | A protocol for synchronizing models between a client and a server. `(not needed in this project)`        |
-| `ModelContextProtocol.AspNetCore`                      | `1.1.0`  | ASP.NET Core middleware for `ModelContextProtocol`.                                                      |
-| `Scalar.AspNetCore`                                    | `2.13.8` | Middleware to expose an embedded version of the Swagger UI to visualize and interact with your web APIs. |
-
-> See comparison between `ModelContextProtocol` vs `ModelContextProtocol.AspNetCore` **[here](ReadMe-MCPPackagesOverview.md)**
-
 ## Web API REST Endpoints
 
 The API follows RESTful conventions with 11 endpoints for comprehensive Todo management.
@@ -303,12 +305,15 @@ The API follows RESTful conventions with 11 endpoints for comprehensive Todo man
 | 10  | **DELETE**  | `/todoitems/delete/{id}`       | Delete a specific todo    | `id` (path, required) - Todo ID                | None                           | Single `Todo` (deleted item) |
 | 11  | **GET**     | `/todoitems/exists/{id}`       | Check if a todo exists    | `id` (path, required) - Todo ID                | None                           | `boolean`                    |
 
-### Swagger UI Usage
+### Scalar API Explorer Usage
 
-1. Navigate to http://localhost:5000/swagger
-2. Click on any endpoint to expand
-3. Use "Try it out" button for interactive testing
-4. View request/response schemas and examples
+1. Open [http://localhost:5000/scalar/v1](http://localhost:5000/scalar/v1) in your browser.
+2. Browse the list of available REST endpoints.
+3. Click any endpoint to view details, parameters, and example payloads.
+4. Select "Try it out" to send live requests and see real-time responses.
+5. Review request/response schemas and example data for each endpoint.
+
+> Scalar UI provides an interactive OpenAPI/Swagger experience for testing and exploring your API.
 
 ## MCP Tools Details
 

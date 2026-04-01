@@ -28,8 +28,16 @@ namespace AspNetOpenAPIDemo
 
         public static async Task Main(string[] args)
         {
+            // When running as a stdio MCP server (Console.IsInputRedirected = true),
+            // suppress all console output so ASP.NET startup banners and logs do not
+            // corrupt the JSON-RPC stdout stream that Claude Desktop reads.
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));            
+            if (Console.IsInputRedirected)
+            {
+                builder.Logging.ClearProviders();
+                builder.WebHost.SuppressStatusMessages(true);
+            }
+            builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi(options =>
@@ -60,7 +68,9 @@ namespace AspNetOpenAPIDemo
                 .AddMcpServer()                 // Add MCP server capabilities
                 .WithStdioServerTransport()     // Disable this line to deploy this to Azure App Service.
                 .WithHttpTransport()            // Enable HTTP transport for web hosting
-                .WithToolsFromAssembly();       // Load MCP tools from the current assembly                
+                .WithToolsFromAssembly()        // Load MCP tools from the current assembly
+                .WithPromptsFromAssembly()      // Load MCP prompts from the current assembly
+                .WithResourcesFromAssembly();   // Load MCP resources from the current assembly
 
             var app = builder.Build();
 
