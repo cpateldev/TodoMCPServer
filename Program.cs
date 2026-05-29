@@ -69,8 +69,8 @@ namespace AspNetOpenAPIDemo
                 .WithStdioServerTransport()     // Disable this line to deploy this to Azure App Service.
                 .WithHttpTransport()            // Enable HTTP transport for web hosting
                 .WithToolsFromAssembly()        // Load MCP tools from the current assembly
-                .WithPromptsFromAssembly()      // Load MCP prompts from the current assembly
-                .WithResourcesFromAssembly();   // Load MCP resources from the current assembly
+                .WithPromptsFromAssembly()      // Load MCP prompts from the current assembly                
+                .WithResourcesFromAssembly();   // Load MCP resources from the current assembly                
 
             var app = builder.Build();
 
